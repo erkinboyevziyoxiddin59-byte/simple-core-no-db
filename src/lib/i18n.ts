@@ -128,7 +128,7 @@ export const uz = {
       silver: "Elita",
       gold: "Prestij",
       diamond: "Afsona",
-    })[key.toLowerCase()] ?? key,
+    } as Record<string, string>)[key.toLowerCase()] ?? key,
   aboutPointsTitle: "Star Points nima?",
   aboutPointsWhat:
     "Star Points — ilovadagi bonus ballaringiz. Har bir tugallangan Stars buyurtmasi uchun avtomatik beriladi.",
@@ -382,7 +382,7 @@ export const ru: Dict = {
       silver: "Элита",
       gold: "Престиж",
       diamond: "Легенда",
-    })[key.toLowerCase()] ?? key,
+    } as Record<string, string>)[key.toLowerCase()] ?? key,
   aboutPointsTitle: "Что такое Star Points?",
   aboutPointsWhat:
     "Star Points — это бонусные баллы приложения. Они начисляются автоматически за каждый выполненный заказ Stars.",
