@@ -51,7 +51,7 @@ function LiveOrders() {
   const orders = data ?? [];
 
   return (
-    <section className="mt-6">
+    <section className="mt-4">
       <div className="mb-2 flex items-center gap-2">
         <Flame className="h-4 w-4 text-primary-glow" />
         <h3 className="text-sm font-semibold uppercase tracking-wide">{t.liveOrders}</h3>
