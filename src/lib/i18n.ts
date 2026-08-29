@@ -32,6 +32,16 @@ export const uz = {
   myOrders: "Buyurtmalarim",
   myOrdersDesc: "Aktiv va tugallangan",
 
+  // live orders feed
+  liveOrders: "Jonli buyurtmalar",
+  liveOrdersEmpty: "Hozircha yakunlangan buyurtmalar yo‘q",
+  liveJustNow: "hozir",
+  liveMinutesAgo: (n: number) => `${n} daqiqa oldin`,
+  liveHoursAgo: (n: number) => `${n} soat oldin`,
+  liveDaysAgo: (n: number) => `${n} kun oldin`,
+  livePremium: (n: number) => `Premium — ${n} oy`,
+
+
   // stars page
   starsTitle: "Stars sotib olish",
   starsSubtitle: "Miqdorni tanlang va username kiriting",
@@ -290,6 +300,16 @@ export const ru: Dict = {
   feature2Desc: "Живой курс с Fragment.",
   myOrders: "Мои заказы",
   myOrdersDesc: "Активные и завершённые",
+
+  // live orders feed
+  liveOrders: "Живые заказы",
+  liveOrdersEmpty: "Пока нет завершённых заказов",
+  liveJustNow: "только что",
+  liveMinutesAgo: (n: number) => `${n} мин назад`,
+  liveHoursAgo: (n: number) => `${n} ч назад`,
+  liveDaysAgo: (n: number) => `${n} дн назад`,
+  livePremium: (n: number) => `Premium — ${n} мес.`,
+
 
   starsTitle: "Покупка Stars",
   starsSubtitle: "Выберите количество и укажите username",
