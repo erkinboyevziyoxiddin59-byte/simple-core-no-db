@@ -131,7 +131,13 @@ export const listMyOrders = createServerFn({ method: "GET" }).handler(async (): 
   return (data ?? []).map((row) => {
     const payments = (row.payments ?? []) as { status: ApiPaymentStatus; reject_reason: string | null; created_at: string }[];
     const latest = [...payments].sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0];
-    const deliveries = (row.deliveries ?? []) as { status: ApiDeliveryStatus; created_at: string }[];
+    // PostgREST may embed deliveries as a single object (one-to-one) or an array — handle both.
+    const rawDeliveries = row.deliveries as unknown;
+    const deliveries: { status: ApiDeliveryStatus; created_at: string }[] = Array.isArray(rawDeliveries)
+      ? rawDeliveries
+      : rawDeliveries
+        ? [rawDeliveries as { status: ApiDeliveryStatus; created_at: string }]
+        : [];
     const latestDelivery = [...deliveries].sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0];
     return {
       id: row.id,
