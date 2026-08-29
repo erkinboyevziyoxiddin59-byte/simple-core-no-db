@@ -129,7 +129,12 @@ export const listMyOrders = createServerFn({ method: "GET" }).handler(async (): 
   if (error) throw new core.AppError("orders_read_failed");
 
   return (data ?? []).map((row) => {
-    const payments = (row.payments ?? []) as { status: ApiPaymentStatus; reject_reason: string | null; created_at: string }[];
+    const rawPayments = row.payments as unknown;
+    const payments: { status: ApiPaymentStatus; reject_reason: string | null; created_at: string }[] = Array.isArray(rawPayments)
+      ? rawPayments
+      : rawPayments
+        ? [rawPayments as { status: ApiPaymentStatus; reject_reason: string | null; created_at: string }]
+        : [];
     const latest = [...payments].sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0];
     // PostgREST may embed deliveries as a single object (one-to-one) or an array — handle both.
     const rawDeliveries = row.deliveries as unknown;
