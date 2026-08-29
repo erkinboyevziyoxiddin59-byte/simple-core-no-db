@@ -86,9 +86,37 @@ async function finish(
     ...(isFinal ? { completed_at: new Date().toISOString() } : {}),
   };
 
-  await db.from("deliveries").update(update).eq("id", deliveryId);
+  // Conditional write: only a row that is still non-final may be finalised.
+  // The row returned here proves *this* call performed the transition, which
+  // is what makes the channel notification below fire exactly once per order.
+  const { data: changed } = await db
+    .from("deliveries")
+    .update(update)
+    .eq("id", deliveryId)
+    .in("status", ["pending", "processing"])
+    .select("order_id")
+    .maybeSingle();
+
+  if (isFinal && changed?.order_id) {
+    try {
+      const { notifyOrderOutcome } = await import("./order-notify.server");
+      await notifyOrderOutcome(
+        changed.order_id as string,
+        patch.status === "success" ? "completed" : "failed",
+        patch.failure_code ?? null,
+      );
+    } catch (error) {
+      // Notifications must never affect order or delivery state.
+      console.error(
+        "[delivery] notify_failed:",
+        error instanceof Error ? error.message : String(error),
+      );
+    }
+  }
+
   return { status: patch.status, reason: patch.failure_code ?? null };
 }
+
 
 /** Reads the current delivery state for an order (no side effects). */
 export async function readDelivery(orderId: string): Promise<DeliveryView> {

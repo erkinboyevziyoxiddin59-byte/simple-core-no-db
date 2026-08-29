@@ -10,6 +10,8 @@ export type ApiOrderStatus =
   | "expired";
 export type ApiPaymentStatus = "pending" | "submitted" | "verified" | "rejected";
 
+export type ApiDeliveryStatus = "pending" | "processing" | "success" | "failed";
+
 export interface ApiOrder {
   id: string;
   orderNo: number;
@@ -20,11 +22,13 @@ export interface ApiOrder {
   amountUzs: number;
   status: ApiOrderStatus;
   paymentStatus: ApiPaymentStatus | null;
+  deliveryStatus: ApiDeliveryStatus | null;
   rejectReason: string | null;
   createdAt: string;
   expiresAt: string;
   completedAt: string | null;
 }
+
 
 /** Server-side price + validity rules. The client price is never trusted. */
 export const createOrder = createServerFn({ method: "POST" })
@@ -100,6 +104,7 @@ export const createOrder = createServerFn({ method: "POST" })
           amountUzs: row.amount_uzs,
           status: row.status,
           paymentStatus: null,
+          deliveryStatus: null,
           rejectReason: null,
           createdAt: row.created_at,
           expiresAt: row.expires_at,
@@ -118,7 +123,7 @@ export const listMyOrders = createServerFn({ method: "GET" }).handler(async (): 
 
   const { data, error } = await core.db
     .from("orders")
-    .select("*, payments(status, reject_reason, created_at)")
+    .select("*, payments(status, reject_reason, created_at), deliveries(status, created_at)")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
   if (error) throw new core.AppError("orders_read_failed");
@@ -126,6 +131,8 @@ export const listMyOrders = createServerFn({ method: "GET" }).handler(async (): 
   return (data ?? []).map((row) => {
     const payments = (row.payments ?? []) as { status: ApiPaymentStatus; reject_reason: string | null; created_at: string }[];
     const latest = [...payments].sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0];
+    const deliveries = (row.deliveries ?? []) as { status: ApiDeliveryStatus; created_at: string }[];
+    const latestDelivery = [...deliveries].sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0];
     return {
       id: row.id,
       orderNo: row.order_no,
@@ -136,6 +143,7 @@ export const listMyOrders = createServerFn({ method: "GET" }).handler(async (): 
       amountUzs: row.amount_uzs,
       status: row.status,
       paymentStatus: latest?.status ?? null,
+      deliveryStatus: latestDelivery?.status ?? null,
       rejectReason: latest?.reject_reason ?? null,
       createdAt: row.created_at,
       expiresAt: row.expires_at,
@@ -171,6 +179,7 @@ export const getMyOrder = createServerFn({ method: "POST" })
       amountUzs: row.amount_uzs,
       status: row.status,
       paymentStatus: latest?.status ?? null,
+      deliveryStatus: null,
       rejectReason: latest?.reject_reason ?? null,
       createdAt: row.created_at,
       expiresAt: row.expires_at,
