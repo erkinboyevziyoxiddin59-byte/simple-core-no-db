@@ -121,6 +121,14 @@ export const uz = {
   noRewards: "Hozircha mukofot so‘rovlari yo‘q.",
   status: "Holat",
   levels: "Darajalar",
+  levelName: (key: string) =>
+    ({
+      new: "Boshlovchi",
+      bronze: "Insayder",
+      silver: "Elita",
+      gold: "Prestij",
+      diamond: "Afsona",
+    } as Record<string, string>)[key.toLowerCase()] ?? key,
   aboutPointsTitle: "Star Points nima?",
   aboutPointsWhat:
     "Star Points — ilovadagi bonus ballaringiz. Har bir tugallangan Stars buyurtmasi uchun avtomatik beriladi.",
@@ -367,6 +375,14 @@ export const ru: Dict = {
   noRewards: "Пока нет запросов на награды.",
   status: "Статус",
   levels: "Уровни",
+  levelName: (key: string) =>
+    ({
+      new: "Старт",
+      bronze: "Инсайдер",
+      silver: "Элита",
+      gold: "Престиж",
+      diamond: "Легенда",
+    } as Record<string, string>)[key.toLowerCase()] ?? key,
   aboutPointsTitle: "Что такое Star Points?",
   aboutPointsWhat:
     "Star Points — это бонусные баллы приложения. Они начисляются автоматически за каждый выполненный заказ Stars.",

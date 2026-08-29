@@ -310,7 +310,7 @@ function AdminPage() {
             {levels.map((lv, i) => (
               <div key={lv.key} className="flex items-center gap-2">
                 <span className="w-24 shrink-0 text-sm">
-                  {lv.emoji} {lv.name}
+                  {lv.emoji} {t.levelName(lv.key)}
                 </span>
                 <NumberInput
                   value={lv.threshold}
