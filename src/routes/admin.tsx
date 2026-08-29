@@ -12,13 +12,11 @@ import {
   getAdminSettings,
   listAdminMissions,
   listAdminRequests,
-  listBankTransactions,
   updateAdminSetting,
   updateLoyaltyLevels,
   updateMission,
   updateRewardRequest,
   updateRewards,
-  type AdminBankTransactionRow,
   type AdminMissionRow,
   type AdminRequestRow,
 } from "../lib/admin.functions";
@@ -94,11 +92,6 @@ function AdminPage() {
   const requestsQuery = useQuery<AdminRequestRow[]>({
     queryKey: ["admin-requests"],
     queryFn: () => listAdminRequests({ data: { status: null } }),
-    enabled: isAdmin,
-  });
-  const bankQuery = useQuery<AdminBankTransactionRow[]>({
-    queryKey: ["admin-bank-transactions"],
-    queryFn: () => listBankTransactions({ data: { limit: 50 } }),
     enabled: isAdmin,
   });
   const missionsQuery = useQuery<AdminMissionRow[]>({
@@ -223,8 +216,6 @@ function AdminPage() {
   const requests = requestsQuery.data ?? [];
   const missions = missionsQuery.data ?? [];
   const pending = requests.filter((r) => r.status === "pending" || r.status === "approved");
-  const bankTx = bankQuery.data ?? [];
-  const configuredLast4 = (payment.cardNumber ?? "").replace(/\D/g, "").slice(-4) || null;
   const l = loyalty as Loyalty;
 
   return (
@@ -580,51 +571,6 @@ function AdminPage() {
                 {mode === "first_purchase" ? t.adminAwardFirstPurchase : t.adminAwardRegistration}
               </label>
             ))}
-          </div>
-        </section>
-
-        {/* HUMO bank notifications — read only */}
-        <section className="mt-6">
-          <h3 className="mb-2 text-sm font-semibold">{t.adminBankTitle}</h3>
-          <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
-            {bankTx.length === 0 ? (
-              <p className="px-4 py-4 text-xs text-muted-foreground">{t.adminBankEmpty}</p>
-            ) : (
-              bankTx.map((b) => (
-                <div key={b.id} className="px-4 py-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold">
-                        {b.direction === "in" ? "➕" : b.direction === "out" ? "➖" : "❔"}{" "}
-                        {b.amountUzs === null ? "—" : formatAmount(b.amountUzs)} {b.currency ?? ""}
-                      </p>
-                      <p className="mt-1 truncate text-[11px] text-muted-foreground">
-                        {t.adminBankDescription}: {b.descriptionRaw ?? "—"}
-                      </p>
-                      <p className="text-[11px] text-muted-foreground">
-                        {t.adminBankCard}: *{b.cardLast4 ?? "----"} ·{" "}
-                        {b.cardLast4 && configuredLast4
-                          ? b.cardLast4 === configuredLast4
-                            ? t.adminBankCardMatch
-                            : t.adminBankCardMismatch
-                          : "—"}
-                      </p>
-                      <p className="text-[11px] text-muted-foreground">
-                        {t.adminBankReceived}: {new Date(b.receivedAt).toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="whitespace-nowrap text-right text-[11px] text-muted-foreground">
-                      <p className="font-medium">
-                        {t.adminBankStatus}: {b.parseStatus}
-                      </p>
-                      <p>
-                        {t.adminBankUpdateId}: {b.telegramUpdateId ?? "—"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
           </div>
         </section>
 
