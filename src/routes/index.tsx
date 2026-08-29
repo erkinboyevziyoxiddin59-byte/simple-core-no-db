@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Star, Crown, ArrowRight, Flame, User, Clock } from "lucide-react";
+import { Star, Crown, ArrowRight, Flame, User } from "lucide-react";
 import { AppHeader } from "../components/AppHeader";
 import { useT } from "../lib/language";
 import { getLiveOrders, type ApiLiveOrder } from "../lib/live-orders.functions";
