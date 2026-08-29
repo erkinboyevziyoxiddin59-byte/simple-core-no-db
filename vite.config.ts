@@ -12,4 +12,8 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Target Vercel with full SSR: Nitro emits .vercel/output (Build Output API v3) —
+  // a Node serverless function for SSR + server functions, plus static client assets.
+  // Ignored inside the Lovable build environment, which pins its own preset.
+  nitro: { preset: "vercel" },
 });
