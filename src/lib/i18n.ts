@@ -62,6 +62,7 @@ export const uz = {
   orderStatusActive: "Kutilmoqda",
   orderStatusPaid: "Yetkazilmoqda",
   orderStatusDelivered: "Yetkazildi",
+  orderStatusDeliveryFailed: "Yetkazilmadi — admin bog‘lanadi",
   orderStatusExpired: "Bekor",
   monthsShort: (n: number) => `${n} oy`,
 
@@ -309,6 +310,7 @@ export const ru: Dict = {
   orderStatusActive: "Ожидание",
   orderStatusPaid: "Доставляется",
   orderStatusDelivered: "Доставлено",
+  orderStatusDeliveryFailed: "Не доставлено — админ свяжется с вами",
   orderStatusExpired: "Отменён",
   monthsShort: (n: number) => `${n} мес.`,
 

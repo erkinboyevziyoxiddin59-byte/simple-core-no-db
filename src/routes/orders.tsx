@@ -68,7 +68,9 @@ function OrdersPage() {
 function OrderCard({ order }: { order: ApiOrder }) {
   const t = useT();
   const isStars = order.productType === "stars";
-  const statusMeta = getStatusMeta(uiStatus(order.status), t);
+  const ui = uiStatus(order.status);
+  const deliveryFailed = order.deliveryStatus === "failed" && ui !== "expired";
+  const statusMeta = deliveryFailed ? getFailedMeta(t) : getStatusMeta(ui, t);
   return (
     <li>
       <Link
@@ -109,6 +111,14 @@ function OrderCard({ order }: { order: ApiOrder }) {
       </Link>
     </li>
   );
+}
+
+function getFailedMeta(t: Dict) {
+  return {
+    label: t.orderStatusDeliveryFailed,
+    icon: <XCircle className="h-3 w-3" />,
+    className: "bg-destructive/15 text-destructive",
+  };
 }
 
 function getStatusMeta(s: UiOrderStatus, t: Dict) {
