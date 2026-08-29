@@ -10,6 +10,8 @@ export type ApiOrderStatus =
   | "expired";
 export type ApiPaymentStatus = "pending" | "submitted" | "verified" | "rejected";
 
+export type ApiDeliveryStatus = "pending" | "processing" | "success" | "failed";
+
 export interface ApiOrder {
   id: string;
   orderNo: number;
@@ -20,11 +22,13 @@ export interface ApiOrder {
   amountUzs: number;
   status: ApiOrderStatus;
   paymentStatus: ApiPaymentStatus | null;
+  deliveryStatus: ApiDeliveryStatus | null;
   rejectReason: string | null;
   createdAt: string;
   expiresAt: string;
   completedAt: string | null;
 }
+
 
 /** Server-side price + validity rules. The client price is never trusted. */
 export const createOrder = createServerFn({ method: "POST" })
