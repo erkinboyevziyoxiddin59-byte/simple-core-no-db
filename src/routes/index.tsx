@@ -15,28 +15,9 @@ function Home() {
   return (
     <>
       <AppHeader title="Starjbot" />
-      <main className="px-4 pb-6 pt-4">
-        {/* Hero */}
-        <section
-          className="relative overflow-hidden rounded-2xl border border-border p-5"
-          style={{ background: "var(--gradient-primary)" }}
-        >
-          <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-30 blur-3xl" style={{ background: "var(--color-primary-glow)" }} />
-          <p className="text-xs font-semibold uppercase tracking-wider text-white/70">{t.miniApp}</p>
-          <h2 className="mt-2 text-2xl font-bold leading-tight text-white">{t.heroTitle}</h2>
-          <p className="mt-2 text-sm text-white/80">{t.heroDesc}</p>
-          <div className="mt-4 flex gap-2">
-            <Link
-              to="/stars"
-              className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-4 py-2 text-sm font-semibold text-primary shadow-sm"
-            >
-              {t.start} <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </section>
-
+      <main className="px-4 pb-6 pt-2">
         {/* Product tiles */}
-        <section className="mt-5 grid grid-cols-2 gap-3">
+        <section className="grid grid-cols-2 gap-3">
           <ProductTile
             to="/stars"
             title="Stars"
