@@ -158,7 +158,7 @@ function PointsPage() {
                 {config.levels.map((l) => (
                   <div key={l.key} className="flex items-center justify-between gap-2 text-xs">
                     <span className="truncate">
-                      {l.emoji} <span className="font-medium text-foreground">{l.name}</span>{" "}
+                      {l.emoji} <span className="font-medium text-foreground">{t.levelName(l.key)}</span>{" "}
                       <span className="text-muted-foreground">
                         · {t.levelFrom(formatAmount(l.threshold))}
                       </span>
@@ -210,7 +210,7 @@ function PointsPage() {
                       <div className="flex items-center gap-2">
                         <span className={reached ? "" : "opacity-40"}>{l.emoji}</span>
                         <span className={`text-sm font-medium ${reached ? "" : "text-muted-foreground"}`}>
-                          {l.name}
+                          {t.levelName(l.key)}
                         </span>
                         <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary-glow">
                           ×{l.multiplier}
@@ -227,7 +227,7 @@ function PointsPage() {
                 <>
                   <Progress value={profile.progressToNext} />
                   <p className="mt-2 text-xs text-muted-foreground">
-                    {t.nextLevel}: {profile.nextLevel.emoji} {profile.nextLevel.name} —{" "}
+                    {t.nextLevel}: {profile.nextLevel.emoji} {t.levelName(profile.nextLevel.key)} —{" "}
                     <span className="font-semibold text-foreground">
                       {formatAmount(Math.max(0, profile.nextLevel.threshold - profile.lifetimeStars))}
                     </span>{" "}

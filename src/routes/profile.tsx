@@ -131,7 +131,7 @@ function ProfilePage() {
               </div>
               <div className="relative mt-4 flex items-center justify-between">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white">
-                  {profile.level.emoji} {profile.level.name} {t.member} · ×{profile.level.multiplier}
+                  {profile.level.emoji} {t.levelName(profile.level.key)} {t.member} · ×{profile.level.multiplier}
                 </span>
                 {copied && <span className="text-[11px] font-medium text-white/90">{t.copied}</span>}
               </div>
