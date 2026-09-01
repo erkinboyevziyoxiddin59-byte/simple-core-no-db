@@ -133,11 +133,11 @@ export const uz = {
   levels: "Darajalar",
   levelName: (key: string) =>
     ({
-      new: "Boshlovchi",
-      bronze: "Insayder",
-      silver: "Elita",
-      gold: "Prestij",
-      diamond: "Afsona",
+      new: "Starter",
+      bronze: "Insider",
+      silver: "Elite",
+      gold: "Prestige",
+      diamond: "Legend",
     } as Record<string, string>)[key.toLowerCase()] ?? key,
   aboutPointsTitle: "Star Points nima?",
   aboutPointsWhat:
@@ -397,11 +397,11 @@ export const ru: Dict = {
   levels: "Уровни",
   levelName: (key: string) =>
     ({
-      new: "Старт",
-      bronze: "Инсайдер",
-      silver: "Элита",
-      gold: "Престиж",
-      diamond: "Легенда",
+      new: "Starter",
+      bronze: "Insider",
+      silver: "Elite",
+      gold: "Prestige",
+      diamond: "Legend",
     } as Record<string, string>)[key.toLowerCase()] ?? key,
   aboutPointsTitle: "Что такое Star Points?",
   aboutPointsWhat:

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Gift } from "lucide-react";
 import { AppHeader } from "../components/AppHeader";
+import { LevelBadge, LevelIcon, normalizeLevelKey } from "../components/LevelIdentity";
 import { Progress } from "../components/StatBits";
 import { formatAmount } from "../lib/format";
 import { useT } from "../lib/language";
@@ -157,8 +158,8 @@ function PointsPage() {
               <div className="mt-3 space-y-1.5">
                 {config.levels.map((l) => (
                   <div key={l.key} className="flex items-center justify-between gap-2 text-xs">
-                    <span className="truncate">
-                      {l.emoji} <span className="font-medium text-foreground">{t.levelName(l.key)}</span>{" "}
+                    <span className="flex min-w-0 items-center gap-2">
+                      <LevelBadge levelKey={l.key} name={t.levelName(l.key)} />
                       <span className="text-muted-foreground">
                         · {t.levelFrom(formatAmount(l.threshold))}
                       </span>
@@ -205,14 +206,14 @@ function PointsPage() {
                   return (
                     <div
                       key={l.key}
-                      className={`flex items-center justify-between rounded-xl px-3 py-2.5 ${active ? "bg-secondary" : ""}`}
+                      className="level-ladder-row flex items-center justify-between px-3 py-2.5"
+                      data-level={normalizeLevelKey(l.key)}
+                      data-active={active}
                     >
                       <div className="flex items-center gap-2">
-                        <span className={reached ? "" : "opacity-40"}>{l.emoji}</span>
-                        <span className={`text-sm font-medium ${reached ? "" : "text-muted-foreground"}`}>
-                          {t.levelName(l.key)}
-                        </span>
-                        <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary-glow">
+                        <span className={reached ? "" : "opacity-40"}><LevelIcon levelKey={l.key} /></span>
+                        <LevelBadge levelKey={l.key} name={t.levelName(l.key)} />
+                        <span className="level-multiplier rounded-full px-2 py-0.5 text-[10px] font-semibold">
                           ×{l.multiplier}
                         </span>
                       </div>
