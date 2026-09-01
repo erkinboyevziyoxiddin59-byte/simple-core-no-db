@@ -36,6 +36,11 @@
   --color-ring: var(--ring);
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
+  --color-level-starter: var(--level-starter);
+  --color-level-insider: var(--level-insider);
+  --color-level-elite: var(--level-elite);
+  --color-level-prestige: var(--level-prestige);
+  --color-level-legend: var(--level-legend);
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -75,6 +80,12 @@
   --input: oklch(0.32 0.02 250);
   --ring: oklch(0.75 0.14 240);
 
+  --level-starter: oklch(0.72 0.14 240);
+  --level-insider: oklch(0.76 0.17 65);
+  --level-elite: oklch(0.7 0.19 305);
+  --level-prestige: oklch(0.84 0.16 88);
+  --level-legend: oklch(0.82 0.14 205);
+
   --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-glow) 100%);
   --gradient-surface: linear-gradient(180deg, var(--surface-elevated) 0%, var(--surface) 100%);
   --gradient-star: linear-gradient(135deg, oklch(0.82 0.16 85) 0%, oklch(0.72 0.18 55) 100%);
@@ -113,6 +124,139 @@
 
 @utility no-tap-highlight {
   -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes legend-shine {
+  0%, 70%, 100% { transform: translateX(-180%) skewX(-18deg); opacity: 0; }
+  78% { opacity: 0.65; }
+  92% { transform: translateX(380%) skewX(-18deg); opacity: 0; }
+}
+
+.product-tile {
+  --product-accent: var(--level-starter);
+  --product-border: var(--border);
+  --product-wash: transparent;
+  border: 1px solid var(--product-border);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(155deg, var(--product-wash), var(--surface) 72%);
+  box-shadow: 0 10px 28px -20px var(--product-accent);
+}
+.product-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, color-mix(in oklab, var(--product-accent) 8%, transparent), transparent 44%);
+}
+.product-tile[data-product="stars"] {
+  --product-accent: oklch(0.82 0.17 82);
+  --product-border: oklch(0.82 0.17 82 / 35%);
+  --product-wash: oklch(0.82 0.17 82 / 12%);
+}
+.product-tile[data-product="premium"] {
+  --product-accent: oklch(0.7 0.2 300);
+  --product-border: oklch(0.7 0.2 300 / 35%);
+  --product-wash: oklch(0.7 0.2 300 / 12%);
+}
+.product-icon {
+  color: var(--primary-foreground);
+  background: linear-gradient(145deg, color-mix(in oklab, var(--product-accent) 88%, white), var(--product-accent));
+  box-shadow: 0 7px 22px -8px var(--product-accent);
+}
+
+.live-order-row,
+.level-ladder-row,
+.level-badge,
+.level-emblem {
+  --level-accent: var(--level-starter);
+  --level-wash: oklch(0.72 0.14 240 / 7%);
+  --level-border: oklch(0.72 0.14 240 / 25%);
+  --level-glow: oklch(0.72 0.14 240 / 14%);
+}
+[data-level="bronze"] {
+  --level-accent: var(--level-insider);
+  --level-wash: oklch(0.76 0.17 65 / 9%);
+  --level-border: oklch(0.76 0.17 65 / 32%);
+  --level-glow: oklch(0.76 0.17 65 / 20%);
+}
+[data-level="silver"] {
+  --level-accent: var(--level-elite);
+  --level-wash: oklch(0.7 0.19 305 / 11%);
+  --level-border: oklch(0.7 0.19 305 / 40%);
+  --level-glow: oklch(0.7 0.19 305 / 28%);
+}
+[data-level="gold"] {
+  --level-accent: var(--level-prestige);
+  --level-wash: oklch(0.84 0.16 88 / 13%);
+  --level-border: oklch(0.84 0.16 88 / 48%);
+  --level-glow: oklch(0.84 0.16 88 / 36%);
+}
+[data-level="diamond"] {
+  --level-accent: var(--level-legend);
+  --level-wash: oklch(0.82 0.14 205 / 15%);
+  --level-border: oklch(0.82 0.14 205 / 58%);
+  --level-glow: oklch(0.84 0.16 88 / 42%);
+}
+.live-order-row {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--level-border);
+  border-left: 3px solid var(--level-accent);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(105deg, var(--level-wash), var(--card) 43%);
+  box-shadow: 0 8px 24px -20px var(--level-glow);
+}
+.live-order-row[data-level="silver"],
+.live-order-row[data-level="gold"],
+.live-order-row[data-level="diamond"] { box-shadow: 0 8px 28px -16px var(--level-glow); }
+.live-order-row[data-level="diamond"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 22%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, oklch(0.95 0.04 90 / 20%), transparent);
+  animation: legend-shine 6s ease-in-out infinite;
+}
+.live-order-avatar { border: 2px solid var(--level-border); box-shadow: 0 0 14px -5px var(--level-glow); }
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  width: fit-content;
+  border: 1px solid var(--level-border);
+  border-radius: 9999px;
+  padding: 0.2rem 0.5rem;
+  color: var(--level-accent);
+  background: var(--level-wash);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 0 14px -8px var(--level-glow);
+}
+.level-badge-icon { display: inline-grid; place-items: center; }
+.level-sparkle { color: var(--level-prestige); }
+.level-emblem {
+  display: grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 1px solid var(--level-border);
+  border-radius: 0.55rem;
+  color: var(--level-accent);
+  background: var(--level-wash);
+  box-shadow: 0 0 16px -7px var(--level-glow);
+}
+.level-ladder-row {
+  border-left: 2px solid var(--level-accent);
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--level-wash), transparent 72%);
+}
+.level-ladder-row[data-active="true"] { border-color: var(--level-accent); box-shadow: inset 0 0 20px -16px var(--level-glow); }
+.level-multiplier { color: var(--level-accent); background: var(--level-wash); }
+
+@media (prefers-reduced-motion: reduce) {
+  .live-order-row[data-level="diamond"]::after { animation: none; }
 }
 
 /* ---- Language gate (first-run splash) ---- */

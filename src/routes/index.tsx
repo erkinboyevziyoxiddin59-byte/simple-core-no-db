@@ -2,11 +2,22 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Star, Crown, ArrowRight, Flame, User } from "lucide-react";
 import { AppHeader } from "../components/AppHeader";
+import { LevelBadge, normalizeLevelKey } from "../components/LevelIdentity";
 import { useT } from "../lib/language";
 import { getLiveOrders, type ApiLiveOrder } from "../lib/live-orders.functions";
 import { formatAmount } from "../lib/format";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Telegram Stars va Premium — Starjbot" },
+      { name: "description", content: "Telegram Stars va Premiumni tez va qulay xarid qiling." },
+      { property: "og:title", content: "Telegram Stars va Premium — Starjbot" },
+      { property: "og:description", content: "Telegram Stars va Premiumni tez va qulay xarid qiling." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Home,
 });
 
@@ -23,14 +34,14 @@ function Home() {
             title="Stars"
             subtitle={t.starsTileSub}
             icon={<Star className="h-6 w-6" fill="currentColor" />}
-            gradient="var(--gradient-star)"
+            product="stars"
           />
           <ProductTile
             to="/premium"
             title="Premium"
             subtitle={t.premiumTileSub}
             icon={<Crown className="h-6 w-6" />}
-            gradient="var(--gradient-premium)"
+            product="premium"
           />
         </section>
 
@@ -84,12 +95,12 @@ function LiveOrderRow({ order }: { order: ApiLiveOrder }) {
       : t.livePremium(order.quantity);
 
   return (
-    <li className="flex items-center gap-3 rounded-2xl border border-border bg-card px-3.5 py-3">
+    <li className="live-order-row flex items-center gap-3 px-3.5 py-3" data-level={normalizeLevelKey(order.levelKey)}>
       {order.photoUrl ? (
         <img
           src={order.photoUrl}
-          alt={order.username ? `@${order.username}` : "user"}
-          className="h-10 w-10 shrink-0 rounded-full border border-border object-cover"
+          alt={order.displayName}
+          className="live-order-avatar h-10 w-10 shrink-0 rounded-full object-cover"
           loading="lazy"
         />
       ) : (
@@ -99,14 +110,10 @@ function LiveOrderRow({ order }: { order: ApiLiveOrder }) {
       )}
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold">
-          {order.username ? `@${order.username}` : "—"}
-        </p>
+        <p className="truncate text-sm font-semibold">{order.displayName}</p>
         <div className="mt-0.5 flex items-center gap-2">
           {order.levelKey && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-secondary px-2 py-0.5 text-[11px] font-medium text-primary-glow">
-              {order.levelEmoji} {t.levelName(order.levelKey)}
-            </span>
+            <LevelBadge levelKey={order.levelKey} name={t.levelName(order.levelKey)} />
           )}
         </div>
       </div>
@@ -143,23 +150,22 @@ function ProductTile({
   title,
   subtitle,
   icon,
-  gradient,
+  product,
 }: {
   to: "/stars" | "/premium";
   title: string;
   subtitle: string;
   icon: React.ReactNode;
-  gradient: string;
+  product: "stars" | "premium";
 }) {
   return (
     <Link
       to={to}
-      className="no-tap-highlight group relative overflow-hidden rounded-2xl border border-border p-4 transition-transform active:scale-[0.98]"
-      style={{ background: "var(--gradient-surface)" }}
+      className="product-tile no-tap-highlight group relative overflow-hidden p-4 transition-transform active:scale-[0.98]"
+      data-product={product}
     >
       <div
-        className="mb-6 inline-flex h-11 w-11 items-center justify-center rounded-xl text-white"
-        style={{ background: gradient }}
+        className="product-icon mb-6 inline-flex h-11 w-11 items-center justify-center rounded-xl"
       >
         {icon}
       </div>

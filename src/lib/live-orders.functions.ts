@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 
 export interface ApiLiveOrder {
   orderId: string;
-  username: string | null;
+  displayName: string;
   photoUrl: string | null;
   productType: "stars" | "premium_3" | "premium_6" | "premium_12";
   quantity: number;
@@ -14,7 +14,7 @@ export interface ApiLiveOrder {
 
 /**
  * Public feed: the 10 most recent orders that are completed AND successfully
- * delivered. Only @username + avatar are exposed (never real names).
+ * delivered. The user's existing Telegram display name and avatar are shown.
  */
 export const getLiveOrders = createServerFn({ method: "GET" }).handler(
   async (): Promise<ApiLiveOrder[]> => {
@@ -23,7 +23,7 @@ export const getLiveOrders = createServerFn({ method: "GET" }).handler(
     const { data, error } = await core.db
       .from("deliveries")
       .select(
-        "order_id, completed_at, orders!inner(id, product_type, quantity, amount_uzs, status, user_id, users(username, photo_url))",
+        "order_id, completed_at, orders!inner(id, product_type, quantity, amount_uzs, status, user_id, users(first_name, last_name, username, photo_url))",
       )
       .eq("status", "success")
       .eq("orders.status", "completed")
@@ -40,7 +40,7 @@ export const getLiveOrders = createServerFn({ method: "GET" }).handler(
         quantity: number;
         amount_uzs: number;
         user_id: string;
-        users: { username: string | null; photo_url: string | null } | null;
+        users: { first_name: string | null; last_name: string | null; username: string | null; photo_url: string | null } | null;
       } | null;
     };
     const rows = (data ?? []) as unknown as Row[];
@@ -63,7 +63,10 @@ export const getLiveOrders = createServerFn({ method: "GET" }).handler(
 
         return {
           orderId: order?.id ?? row.order_id,
-          username: user?.username ?? null,
+          displayName:
+            [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
+            user?.username ||
+            "Telegram user",
           photoUrl: user?.photo_url ?? null,
           productType: order?.product_type ?? "stars",
           quantity: order?.quantity ?? 0,
