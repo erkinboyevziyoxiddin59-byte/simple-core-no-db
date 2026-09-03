@@ -213,25 +213,25 @@ export async function upsertTelegramUser(payload: TelegramUserPayload): Promise<
 
 /** Attributes a referral once, ignoring self-referrals and duplicates. */
 export async function attachReferral(user: DbUser, startParam: string | null | undefined) {
-  if (!startParam || user.referred_by) return;
-  const code = startParam.trim();
-  if (!code.startsWith("ref_")) return;
-  if (code === user.referral_code) return;
-
-  const { data: referrer } = await db
-    .from("users")
-    .select("id")
-    .eq("referral_code", code)
-    .maybeSingle();
-  if (!referrer || referrer.id === user.id) return;
-
-  const { error } = await db
-    .from("referrals")
-    .insert({ referrer_id: referrer.id, referred_id: user.id });
-  if (error) return; // unique / check constraint => already referred or self-referral
-
-  await db.from("users").update({ referred_by: referrer.id }).eq("id", user.id);
+  const { recordReferralSignup } = await import("./referrals.server");
+  return recordReferralSignup(db as never, user, startParam);
 }
+
+/**
+ * Returns the existing user row for a Telegram identity, creating it when missing.
+ * Unlike upsertTelegramUser it never overwrites stored profile fields with the
+ * sparse `from` object Telegram sends on bot messages.
+ */
+export async function ensureTelegramUser(payload: TelegramUserPayload): Promise<DbUser> {
+  const { data } = await db
+    .from("users")
+    .select("*")
+    .eq("telegram_id", payload.telegram_id)
+    .maybeSingle();
+  if (data) return data;
+  return upsertTelegramUser(payload);
+}
+
 
 /* ---------------- authorization ---------------- */
 

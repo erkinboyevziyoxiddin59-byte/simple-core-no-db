@@ -4,7 +4,11 @@ interface TelegramUser {
   id?: number;
   username?: string;
   first_name?: string;
+  last_name?: string;
+  language_code?: string;
+  is_bot?: boolean;
 }
+
 
 interface TelegramChat {
   id?: number;
@@ -239,7 +243,46 @@ export const Route = createFileRoute("/api/telegram-webhook")({
           console.error("[telegram-webhook] bank_failed:", err instanceof Error ? err.message : err);
         }
 
+        // Referral signup: `/start ref_<telegramId>` in a private bot chat.
+        // Registration only — Star Points are still awarded by complete_order().
+        try {
+          const message = update.message;
+          const from = message?.from;
+          if (
+            record.update_type === "message" &&
+            message?.chat?.type === "private" &&
+            from?.id &&
+            !from.is_bot &&
+            typeof message.text === "string" &&
+            message.text.trim().startsWith("/start")
+          ) {
+            const { parseStartPayload, isReferralCode } = await import(
+              "@/lib/server/referrals.server"
+            );
+            const code = parseStartPayload(message.text);
+            if (isReferralCode(code)) {
+              const core = await import("@/lib/server/core.server");
+              const user = await core.ensureTelegramUser({
+                telegram_id: from.id,
+                username: from.username ?? null,
+                first_name: from.first_name ?? null,
+                last_name: from.last_name ?? null,
+                photo_url: null,
+                language_code: from.language_code ?? null,
+              });
+              const outcome = await core.attachReferral(user, code);
+              console.log("[telegram-webhook] referral:", outcome);
+            }
+          }
+        } catch (err) {
+          console.error(
+            "[telegram-webhook] referral_failed:",
+            err instanceof Error ? err.message : err,
+          );
+        }
+
         // Always 200 so Telegram never retries.
+
         return Response.json({ ok: true });
       },
 
