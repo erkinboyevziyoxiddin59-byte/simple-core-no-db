@@ -71,7 +71,7 @@ export const getLiveOrders = createServerFn({ method: "GET" }).handler(
         }
 
         return {
-          orderId: order?.id ?? row.order_id,
+          orderId: order.id,
           displayName:
             [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
             user?.username ||
@@ -80,7 +80,7 @@ export const getLiveOrders = createServerFn({ method: "GET" }).handler(
           productType: order?.product_type ?? "stars",
           quantity: order?.quantity ?? 0,
           amountUzs: order?.amount_uzs ?? 0,
-          completedAt: row.completed_at ?? new Date().toISOString(),
+          completedAt: order.completed_at ?? new Date().toISOString(),
           levelKey,
           levelEmoji,
         };
