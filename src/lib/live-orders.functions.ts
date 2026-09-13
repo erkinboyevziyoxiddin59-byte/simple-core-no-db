@@ -21,34 +21,43 @@ export const getLiveOrders = createServerFn({ method: "GET" }).handler(
     const core = await import("./server/core.server");
 
     const { data, error } = await core.db
-      .from("deliveries")
+      .from("orders")
       .select(
-        "order_id, completed_at, orders!inner(id, product_type, quantity, amount_uzs, status, user_id, users(first_name, last_name, username, photo_url))",
+        "id, product_type, quantity, amount_uzs, completed_at, user_id, users(first_name, last_name, username, photo_url), deliveries(status)",
       )
-      .eq("status", "success")
-      .eq("orders.status", "completed")
+      .eq("status", "completed")
+      .not("completed_at", "is", null)
       .order("completed_at", { ascending: false })
-      .limit(10);
+      .limit(25);
     if (error) throw new core.AppError("live_orders_failed");
 
     type Row = {
-      order_id: string;
+      id: string;
+      product_type: ApiLiveOrder["productType"];
+      quantity: number;
+      amount_uzs: number;
       completed_at: string | null;
-      orders: {
-        id: string;
-        product_type: ApiLiveOrder["productType"];
-        quantity: number;
-        amount_uzs: number;
-        user_id: string;
-        users: { first_name: string | null; last_name: string | null; username: string | null; photo_url: string | null } | null;
-      } | null;
+      user_id: string;
+      users:
+        | { first_name: string | null; last_name: string | null; username: string | null; photo_url: string | null }
+        | Array<{ first_name: string | null; last_name: string | null; username: string | null; photo_url: string | null }>
+        | null;
+      deliveries: { status: string } | Array<{ status: string }> | null;
     };
-    const rows = (data ?? []) as unknown as Row[];
+    const all = (data ?? []) as unknown as Row[];
+
+    // A completed order counts as delivered unless its delivery explicitly failed.
+    const rows = all
+      .filter((r) => {
+        const d = Array.isArray(r.deliveries) ? r.deliveries : r.deliveries ? [r.deliveries] : [];
+        return !d.some((x) => x.status === "failed");
+      })
+      .slice(0, 10);
 
     return Promise.all(
-      rows.map(async (row) => {
-        const order = row.orders;
-        const user = order?.users ?? null;
+      rows.map(async (order) => {
+        const rawUser = order.users;
+        const user = (Array.isArray(rawUser) ? rawUser[0] : rawUser) ?? null;
 
         // Level from the user's existing lifetime progress (Starter..Legend).
         let levelKey: string | null = null;
@@ -62,7 +71,7 @@ export const getLiveOrders = createServerFn({ method: "GET" }).handler(
         }
 
         return {
-          orderId: order?.id ?? row.order_id,
+          orderId: order.id,
           displayName:
             [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
             user?.username ||
@@ -71,7 +80,7 @@ export const getLiveOrders = createServerFn({ method: "GET" }).handler(
           productType: order?.product_type ?? "stars",
           quantity: order?.quantity ?? 0,
           amountUzs: order?.amount_uzs ?? 0,
-          completedAt: row.completed_at ?? new Date().toISOString(),
+          completedAt: order.completed_at ?? new Date().toISOString(),
           levelKey,
           levelEmoji,
         };
